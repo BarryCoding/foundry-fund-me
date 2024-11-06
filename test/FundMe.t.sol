@@ -3,13 +3,14 @@ pragma solidity ^0.8.18;
 
 import {Test, console} from "forge-std/test.sol";
 import {FundMe} from "../src/FundMe.sol";
+import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 
 contract FundMeTest is Test {
     FundMe fundMe;
 
     function setUp() public {
-        // I -> FundMeTest -> FundMe
-        fundMe = new FundMe();
+        DeployFundMe deployFundMe = new DeployFundMe();
+        fundMe = deployFundMe.run(); // I run deployFundMe, I am the sender
     }
 
     function test_MinimumDollarIsFive() public view {
@@ -20,7 +21,7 @@ contract FundMeTest is Test {
         // console.log("[sender] call the test contract", msg.sender);
         // console.log("[this test contract] deploy fundMe", address(this));
         // console.log("[owner] of fundMe contract", fundMe.i_owner());
-        assertEq(fundMe.i_owner(), address(this));
+        assertEq(fundMe.i_owner(), msg.sender);
     }
 
     // Command: `forge test --match-test test_PriceFeedIsFour -vvvv --fork-url $SEPOLIA_RPC_URL`
@@ -29,5 +30,5 @@ contract FundMeTest is Test {
         assertEq(fundMe.getVersion(), 4);
     }
 
-    // Command: forge coverage --fork-url $SEPOLIA_RPC_URL
+    // Command: forge coverage --fork-url $SEPOLIA_RPC_URL -vvvv
 }
