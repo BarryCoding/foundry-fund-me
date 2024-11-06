@@ -22,4 +22,12 @@ contract FundMeTest is Test {
         // console.log("[owner] of fundMe contract", fundMe.i_owner());
         assertEq(fundMe.i_owner(), address(this));
     }
+
+    // Command: `forge test --match-test test_PriceFeedIsFour -vvvv --fork-url $SEPOLIA_RPC_URL`
+    function test_PriceFeedIsFour() public view {
+        // console.log("priceFeed version:", fundMe.getVersion());
+        assertEq(fundMe.getVersion(), 4);
+    }
+
+    // Command: forge coverage --fork-url $SEPOLIA_RPC_URL
 }
