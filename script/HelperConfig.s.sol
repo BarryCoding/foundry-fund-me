@@ -2,6 +2,7 @@
 pragma solidity ^0.8.18;
 
 import {Script} from "forge-std/Script.sol";
+import {V3Aggregator} from "../test/mock/V3Aggregator.sol";
 
 contract HelperConfig is Script {
     struct NetwrokConfig {
@@ -26,5 +27,10 @@ contract HelperConfig is Script {
             });
     }
 
-    function getAnvilEthConfig() public pure returns (NetwrokConfig memory) {}
+    function getAnvilEthConfig() public returns (NetwrokConfig memory) {
+        vm.startBroadcast();
+        V3Aggregator MockAggregator = new V3Aggregator(8, 2000e8);
+        vm.stopBroadcast();
+        return NetwrokConfig({priceFeed: address(MockAggregator)});
+    }
 }
