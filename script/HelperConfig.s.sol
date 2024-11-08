@@ -5,6 +5,9 @@ import {Script} from "forge-std/Script.sol";
 import {V3Aggregator} from "../test/mock/V3Aggregator.sol";
 
 contract HelperConfig is Script {
+    uint8 constant MOCK_DECIMALS = 8;
+    int256 constant MOCK_INITIAL_PRICE = 2000e8;
+
     struct NetwrokConfig {
         address priceFeed;
     }
@@ -29,7 +32,10 @@ contract HelperConfig is Script {
 
     function getAnvilEthConfig() public returns (NetwrokConfig memory) {
         vm.startBroadcast();
-        V3Aggregator MockAggregator = new V3Aggregator(8, 2000e8);
+        V3Aggregator MockAggregator = new V3Aggregator(
+            MOCK_DECIMALS,
+            MOCK_INITIAL_PRICE
+        );
         vm.stopBroadcast();
         return NetwrokConfig({priceFeed: address(MockAggregator)});
     }
