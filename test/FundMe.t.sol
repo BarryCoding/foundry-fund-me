@@ -8,7 +8,12 @@ import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 contract FundMeTest is Test {
     FundMe fundMe;
 
+    address userAlice = makeAddr("Alice");
+    uint256 constant SEND_VALUE = 0.1 ether; // 1e17
+    uint256 constant STARTING_BALANCE = 10 ether;
+
     function setUp() public {
+        vm.deal(userAlice, STARTING_BALANCE);
         DeployFundMe deployFundMe = new DeployFundMe();
         fundMe = deployFundMe.run(); // I run deployFundMe, I am the sender
     }
@@ -35,5 +40,11 @@ contract FundMeTest is Test {
     function test_FundFailsWithoutEnoughETH() public {
         vm.expectRevert();
         fundMe.fund();
+    }
+
+    function test_FundUpdatesFundDataStructure() public {
+        vm.prank(userAlice);
+        fundMe.fund{value: SEND_VALUE}();
+        assertEq(fundMe.getAddressToAmountFunded(userAlice), SEND_VALUE);
     }
 }
