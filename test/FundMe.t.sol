@@ -26,7 +26,7 @@ contract FundMeTest is Test {
         // console.log("[sender] call the test contract", msg.sender);
         // console.log("[this test contract] deploy fundMe", address(this));
         // console.log("[owner] of fundMe contract", fundMe.i_owner());
-        assertEq(fundMe.i_owner(), msg.sender);
+        assertEq(fundMe.getOwner(), msg.sender);
     }
 
     // Command: `forge test --match-test test_PriceFeedIsFour -vvvv --fork-url $SEPOLIA_RPC_URL`
@@ -64,5 +64,22 @@ contract FundMeTest is Test {
         vm.prank(userAlice);
         fundMe.fund{value: SEND_VALUE}();
         _;
+    }
+
+    function test_WithdrawFromOwner() public fundedByAlice {
+        // Arrage
+        address owner = fundMe.getOwner();
+        uint256 ownerBalanceBefore = owner.balance;
+        uint256 fundMeBalanceBefore = address(fundMe).balance;
+
+        // Act
+        vm.prank(owner);
+        fundMe.withdraw();
+
+        // Assert
+        uint256 fundMeBalanceAfter = address(fundMe).balance;
+        uint256 ownerBalanceAfter = owner.balance;
+        assertEq(fundMeBalanceAfter, 0);
+        assertEq(ownerBalanceAfter, ownerBalanceBefore + fundMeBalanceBefore);
     }
 }
