@@ -31,4 +31,9 @@ contract FundMeTest is Test {
     }
 
     // Command: forge coverage --fork-url $SEPOLIA_RPC_URL -vvvv
+
+    function test_FundFailsWithoutEnoughETH() public {
+        vm.expectRevert();
+        fundMe.fund();
+    }
 }
