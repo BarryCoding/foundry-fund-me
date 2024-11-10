@@ -85,7 +85,7 @@ contract FundMeTest is Test {
 
     function test_WithdrawAfterMultipleFunds() public fundedByAlice {
         // Arrange
-        uint160 NUMBER_OF_FUNDS = 5;
+        uint160 NUMBER_OF_FUNDS = 20;
         // start from 1 as Alice is the first funder
         for (uint160 i = 1; i < NUMBER_OF_FUNDS; i++) {
             hoax(address(i), SEND_VALUE);
@@ -98,6 +98,33 @@ contract FundMeTest is Test {
         // Act
         vm.prank(fundMe.getOwner());
         fundMe.withdraw();
+
+        // Assert
+        uint256 fundMeBalanceAfter = address(fundMe).balance;
+        uint256 ownerBalanceAfter = owner.balance;
+        assertEq(fundMeBalanceAfter, 0);
+        assertEq(ownerBalanceAfter, ownerBalanceBefore + fundMeBalanceBefore);
+        assertEq(
+            ownerBalanceAfter,
+            ownerBalanceBefore + SEND_VALUE * NUMBER_OF_FUNDS
+        );
+    }
+
+    function test_WithdrawAfterMultipleFundsCheaper() public fundedByAlice {
+        // Arrange
+        uint160 NUMBER_OF_FUNDS = 20;
+        // start from 1 as Alice is the first funder
+        for (uint160 i = 1; i < NUMBER_OF_FUNDS; i++) {
+            hoax(address(i), SEND_VALUE);
+            fundMe.fund{value: SEND_VALUE}();
+        }
+        address owner = fundMe.getOwner();
+        uint256 ownerBalanceBefore = owner.balance;
+        uint256 fundMeBalanceBefore = address(fundMe).balance;
+
+        // Act
+        vm.prank(fundMe.getOwner());
+        fundMe.withdrawCheaper();
 
         // Assert
         uint256 fundMeBalanceAfter = address(fundMe).balance;
